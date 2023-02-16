@@ -1,0 +1,30 @@
+# Go binary, and executables
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Go build and test files
+*.test
+*.prof
+
+# Go generated files
+bin/
+pkg/
+vendor/
+tmp/
+
+# Go documentation files
+*.doc
+*.docx
+*.pdf
+
+# Go coverage files
+*.cov
+*.out
+.cover
+
+# Go tools
+.idea/
+.vscode/
