@@ -49,8 +49,20 @@ func articlesIndexHandler(w http.ResponseWriter, _ *http.Request) {
 	}
 }
 
-func articlesStoreHandler(w http.ResponseWriter, _ *http.Request) {
-	_, err := fmt.Fprint(w, "创建新的文章")
+func articlesStoreHandler(w http.ResponseWriter, r *http.Request) {
+	_, err := fmt.Fprintf(w, "r.Form 中 title 的值为: %v <br>", r.FormValue("title"))
+	if err != nil {
+		return
+	}
+	_, err = fmt.Fprintf(w, "r.PostForm 中 title 的值为: %v <br>", r.PostFormValue("title"))
+	if err != nil {
+		return
+	}
+	_, err = fmt.Fprintf(w, "r.Form 中 test 的值为: %v <br>", r.FormValue("test"))
+	if err != nil {
+		return
+	}
+	_, err = fmt.Fprintf(w, "r.PostForm 中 test 的值为: %v <br>", r.PostFormValue("test"))
 	if err != nil {
 		return
 	}
@@ -109,6 +121,7 @@ func main() {
 	router.HandleFunc("/articles", articlesStoreHandler).Methods("POST").Name("articles.store")
 
 	router.HandleFunc("/articles/create", articlesCreateHandler).Methods("GET").Name("articles.create")
+	router.HandleFunc("/articles", articlesStoreHandler).Methods("POST").Name("articles.store")
 
 	// 自定义 404 页面
 	router.NotFoundHandler = http.HandlerFunc(notFoundHandler)
