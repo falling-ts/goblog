@@ -2,6 +2,7 @@ package bootstrap
 
 import (
 	apply "goblog/app"
+	"goblog/app/http/middlewares"
 	"goblog/routes"
 )
 
@@ -20,4 +21,5 @@ func initRouter() {
 	routes.RegisterWeb(router)
 
 	// 中间件
+	router.Use(middlewares.StartSession)
 }
