@@ -7,6 +7,7 @@ import (
 )
 
 type Article struct {
+	BaseModel
 	ID    uint64
 	Title string
 	Body  string

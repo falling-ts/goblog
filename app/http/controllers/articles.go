@@ -7,11 +7,10 @@ import (
 	"goblog/app/models"
 	"goblog/pkg/logger"
 	"goblog/pkg/route"
-	"goblog/pkg/types"
+	"goblog/pkg/view"
 	"gorm.io/gorm"
 	"html/template"
 	"net/http"
-	"path/filepath"
 	"strconv"
 	"unicode/utf8"
 )
@@ -39,20 +38,7 @@ func (*Article) Index(w http.ResponseWriter, r *http.Request) {
 		err.Throw(fmt.Fprint(w, "500 服务器内部错误"))
 	} else {
 		// 2. 加载模板
-		// 2.0 设置模板相对路径
-		viewDir := "resources/views"
-
-		// 2.1 所有布局模板文件 Slice
-		files, _ := filepath.Glob(viewDir + "/layouts/*.gohtml")
-
-		// 2.2 在 Slice 里新增我们的目标文件
-		newFiles := append(files, viewDir+"/articles/index.gohtml")
-
-		// 2.3 解析模板文件
-		tmpl, _ := template.ParseFiles(newFiles...)
-
-		// 2.4 渲染模板，将所有文章的数据传输进去
-		err.Throw(tmpl.ExecuteTemplate(w, "app", articles))
+		view.Render(w, "articles.index", articles)
 	}
 }
 
@@ -85,27 +71,7 @@ func (*Article) Show(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		// 4. 读取成功，显示文章
-		// 4.0 设置模板相对路径
-		viewDir := "resources/views"
-
-		// 4.1 所有布局模板文件 Slice
-		files, err := filepath.Glob(viewDir + "/layouts/*.gohtml")
-		logger.LogError(err)
-
-		// 4.2 在 Slice 里新增我们的目标文件
-		newFiles := append(files, viewDir+"/articles/show.gohtml")
-
-		// 4.3 解析模板文件
-		tmpl, err := template.New("show.gohtml").
-			Funcs(template.FuncMap{
-				"RouteName2URL":  route.Name2URL,
-				"Uint64ToString": types.Uint64ToString,
-			}).ParseFiles(newFiles...)
-		logger.LogError(err)
-
-		// 4.4 渲染模板，将所有文章的数据传输进去
-		err = tmpl.ExecuteTemplate(w, "app", article)
-		logger.LogError(err)
+		view.Render(w, "articles.show", article)
 	}
 }
 
