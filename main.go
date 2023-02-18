@@ -1,5 +1,6 @@
 package main
 
+import _ "goblog/config"
 import (
 	apply "goblog/app"
 	"goblog/app/http/middlewares"
