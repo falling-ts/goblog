@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/go-sql-driver/mysql"
+	"goblog/pkg/route"
 	"html/template"
 	"log"
 	"net/http"
@@ -546,6 +547,8 @@ func (a Article) Delete() (rowsAffected int64, err error) {
 func main() {
 	initDB()
 
+	route.Initialize()
+	router = route.Router
 	router.HandleFunc("/", homeHandler).Methods("GET").Name("home")
 	router.HandleFunc("/about", aboutHandler).Methods("GET").Name("about")
 

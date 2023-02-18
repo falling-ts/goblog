@@ -1,4 +1,4 @@
-module github.com/zgh-yuanshang/goblog
+module goblog
 
 go 1.20
 
