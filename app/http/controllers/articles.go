@@ -37,7 +37,9 @@ func (*Article) Index(w http.ResponseWriter, r *http.Request) {
 		err.Throw(fmt.Fprint(w, "500 服务器内部错误"))
 	} else {
 		// 2. 加载模板
-		view.Render(w, articles, "articles.index")
+		view.Render(w, view.D{
+			"Articles": articles,
+		}, "articles.index")
 	}
 }
 
@@ -70,13 +72,15 @@ func (*Article) Show(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		// 4. 读取成功，显示文章
-		view.Render(w, article, "articles.show")
+		view.Render(w, view.D{
+			"Article": article,
+		}, "articles.show")
 	}
 }
 
 // Create 创建文章页面
 func (*Article) Create(w http.ResponseWriter, r *http.Request) {
-	view.Render(w, ArticleFormData{}, "articles.create", "articles._form_field")
+	view.Render(w, view.D{}, "articles.create", "articles._form_field")
 }
 
 // Store 保存文章
@@ -104,10 +108,10 @@ func (*Article) Store(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprint(w, "创建文章失败，请联系管理员")
 		}
 	} else {
-		view.Render(w, ArticleFormData{
-			Title:  title,
-			Body:   body,
-			Errors: errors,
+		view.Render(w, view.D{
+			"Title":  title,
+			"Body":   body,
+			"Errors": errors,
 		}, "articles.create", "articles._form_field")
 	}
 }
@@ -134,11 +138,11 @@ func (*Article) Edit(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		// 4. 读取成功，显示编辑文章表单
-		view.Render(w, ArticleFormData{
-			Title:   article.Title,
-			Body:    article.Body,
-			Article: article,
-			Errors:  nil,
+		view.Render(w, view.D{
+			"Title":   article.Title,
+			"Body":    article.Body,
+			"Article": article,
+			"Errors":  nil,
 		}, "articles.edit", "articles._form_field")
 	}
 }
@@ -195,11 +199,11 @@ func (*Article) Update(w http.ResponseWriter, r *http.Request) {
 		} else {
 
 			// 4.3 表单验证不通过，显示理由
-			view.Render(w, ArticleFormData{
-				Title:   title,
-				Body:    body,
-				Article: article,
-				Errors:  errors,
+			view.Render(w, view.D{
+				"Title":   title,
+				"Body":    body,
+				"Article": article,
+				"Errors":  errors,
 			}, "articles.edit", "articles._form_field")
 		}
 	}
