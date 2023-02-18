@@ -1,6 +1,9 @@
 package models
 
-import "goblog/pkg/logger"
+import (
+	"goblog/pkg/logger"
+	"goblog/pkg/types"
+)
 
 // User 用户模型
 type User struct {
@@ -14,6 +17,10 @@ type User struct {
 	PasswordConfirm string `gorm:"-" valid:"password_confirm"`
 }
 
+func NewUser() *User {
+	return &User{}
+}
+
 // Create 创建用户，通过 User.ID 来判断是否创建成功
 func (user *User) Create() (err error) {
 	if err = db.Create(&user).Error; err != nil {
@@ -22,4 +29,25 @@ func (user *User) Create() (err error) {
 	}
 
 	return nil
+}
+
+func (user *User) Get(idstr string) error {
+	id := types.StringToUint64(idstr)
+	if err := db.First(user, id).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+// GetByEmail 通过 Email 来获取用户
+func (user *User) GetByEmail(email string) error {
+	if err := db.Where("email = ?", email).First(user).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+// ComparePassword 对比密码是否匹配
+func (user *User) ComparePassword(password string) bool {
+	return user.Password == password
 }
