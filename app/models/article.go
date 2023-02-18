@@ -8,8 +8,8 @@ import (
 
 type Article struct {
 	BaseModel
-	Title string
-	Body  string
+	Title string `gorm:"type:varchar(255);not null;" valid:"title"`
+	Body  string `gorm:"type:longtext;not null;" valid:"body"`
 }
 
 func NewArticle() *Article {

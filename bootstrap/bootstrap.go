@@ -3,6 +3,7 @@ package bootstrap
 import (
 	apply "goblog/app"
 	"goblog/app/http/middlewares"
+	"goblog/config"
 	"goblog/routes"
 )
 
@@ -13,6 +14,7 @@ var (
 
 func init() {
 	initRouter()
+	config.Initialize()
 }
 
 // initRouter 初始化路由

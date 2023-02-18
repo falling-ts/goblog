@@ -2,10 +2,13 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/go-sql-driver/mysql"
+	"goblog/pkg/config"
 	"goblog/pkg/logger"
 	gormMysql "gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	gormLogger "gorm.io/gorm/logger"
 	"time"
 )
 
@@ -51,13 +54,29 @@ func InitGormDB() *gorm.DB {
 
 	var err error
 
-	config := gormMysql.New(gormMysql.Config{
-		DSN: "root:root@tcp(127.0.0.1:3306)/goblog?charset=utf8&parseTime=True&loc=Local",
+	// 初始化 MySQL 连接信息
+	gormConfig := gormMysql.New(gormMysql.Config{
+		DSN: fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?charset=%v&parseTime=True&loc=Local",
+			config.GetString("database.mysql.username"),
+			config.GetString("database.mysql.password"),
+			config.GetString("database.mysql.host"),
+			config.GetString("database.mysql.port"),
+			config.GetString("database.mysql.database"),
+			config.GetString("database.mysql.charset")),
 	})
 
+	var level gormLogger.LogLevel
+	if config.GetBool("app.debug") {
+		// 读取不到数据也会显示
+		level = gormLogger.Warn
+	} else {
+		// 只有错误才会显示
+		level = gormLogger.Error
+	}
+
 	// 准备数据库连接池
-	gormDB, err = gorm.Open(config, &gorm.Config{
-		// Logger: gormLogger.Default.LogMode(gormLogger.Info),
+	gormDB, err = gorm.Open(gormConfig, &gorm.Config{
+		Logger: gormLogger.Default.LogMode(level),
 	})
 
 	logger.LogError(err)
@@ -65,11 +84,11 @@ func InitGormDB() *gorm.DB {
 	db, _ = gormDB.DB()
 
 	// 设置最大连接数
-	db.SetMaxOpenConns(100)
+	db.SetMaxOpenConns(config.GetInt("database.mysql.max_open_connections"))
 	// 设置最大空闲连接数
-	db.SetMaxIdleConns(25)
+	db.SetMaxIdleConns(config.GetInt("database.mysql.max_idle_connections"))
 	// 设置每个链接的过期时间
-	db.SetConnMaxLifetime(5 * time.Minute)
+	db.SetConnMaxLifetime(time.Duration(config.GetInt("database.mysql.max_life_seconds")) * time.Second)
 
 	return gormDB
 }

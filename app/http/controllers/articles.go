@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"goblog/app/models"
+	"goblog/app/requests"
 	"goblog/pkg/logger"
 	"goblog/pkg/route"
 	"goblog/pkg/view"
 	"gorm.io/gorm"
 	"net/http"
-	"strconv"
 	"unicode/utf8"
 )
 
@@ -85,33 +85,28 @@ func (*Article) Create(w http.ResponseWriter, r *http.Request) {
 
 // Store 保存文章
 func (*Article) Store(w http.ResponseWriter, r *http.Request) {
-	title := r.PostFormValue("title")
-	body := r.PostFormValue("body")
+	article := &models.Article{
+		Title: r.PostFormValue("title"),
+		Body:  r.PostFormValue("body"),
+	}
 
-	errors := validateArticleFormData(title, body)
+	errors := requests.ValidateArticleForm(*article)
 
 	// 检查是否有错误
 	if len(errors) == 0 {
-		article = &models.Article{
-			Title: title,
-			Body:  body,
-		}
-		err := article.Create()
-		if err != nil {
-			return
-		}
-
+		// 创建文章
+		article.Create()
 		if article.ID > 0 {
-			fmt.Fprint(w, "插入成功，ID 为"+strconv.FormatUint(article.ID, 10))
+			indexURL := route.Name2URL("articles.show", "id", article.GetStringID())
+			http.Redirect(w, r, indexURL, http.StatusFound)
 		} else {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprint(w, "创建文章失败，请联系管理员")
 		}
 	} else {
 		view.Render(w, view.D{
-			"Title":  title,
-			"Body":   body,
-			"Errors": errors,
+			"Article": article,
+			"Errors":  errors,
 		}, "articles.create", "articles._form_field")
 	}
 }
@@ -139,10 +134,8 @@ func (*Article) Edit(w http.ResponseWriter, r *http.Request) {
 	} else {
 		// 4. 读取成功，显示编辑文章表单
 		view.Render(w, view.D{
-			"Title":   article.Title,
-			"Body":    article.Body,
 			"Article": article,
-			"Errors":  nil,
+			"Errors":  view.D{},
 		}, "articles.edit", "articles._form_field")
 	}
 }
@@ -169,17 +162,14 @@ func (*Article) Update(w http.ResponseWriter, r *http.Request) {
 		// 4. 未出现错误
 
 		// 4.1 表单验证
-		title := r.PostFormValue("title")
-		body := r.PostFormValue("body")
+		article.Title = r.PostFormValue("title")
+		article.Body = r.PostFormValue("body")
 
-		errors := validateArticleFormData(title, body)
+		errors := requests.ValidateArticleForm(*article)
 
 		if len(errors) == 0 {
 
 			// 4.2 表单验证通过，更新数据
-			article.Title = title
-			article.Body = body
-
 			rowsAffected, err := article.Update()
 
 			if err != nil {
@@ -200,8 +190,6 @@ func (*Article) Update(w http.ResponseWriter, r *http.Request) {
 
 			// 4.3 表单验证不通过，显示理由
 			view.Render(w, view.D{
-				"Title":   title,
-				"Body":    body,
 				"Article": article,
 				"Errors":  errors,
 			}, "articles.edit", "articles._form_field")
