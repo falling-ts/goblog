@@ -10,8 +10,6 @@
 *.prof
 
 # Go generated files
-bin/
-pkg/
 vendor/
 tmp/
 
