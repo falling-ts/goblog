@@ -1,18 +1,52 @@
 package requests
 
 import (
+	"errors"
+	"fmt"
+	apply "goblog/app"
 	"goblog/app/models"
+	"strings"
 
 	"github.com/thedevsaddam/govalidator"
 )
+
+var (
+	app = apply.App
+	db  = app.DB
+)
+
+// 此方法会在初始化时执行
+func init() {
+	// not_exists:users,email
+	govalidator.AddCustomRule("not_exists", func(field string, rule string, message string, value interface{}) error {
+		rng := strings.Split(strings.TrimPrefix(rule, "not_exists:"), ",")
+
+		tableName := rng[0]
+		dbFiled := rng[1]
+		val := value.(string)
+
+		var count int64
+		db.Table(tableName).Where(dbFiled+" = ?", val).Count(&count)
+
+		if count != 0 {
+
+			if message != "" {
+				return errors.New(message)
+			}
+
+			return fmt.Errorf("%v 已被占用", val)
+		}
+		return nil
+	})
+}
 
 // ValidateRegistrationForm 验证表单，返回 errs 长度等于零即通过
 func ValidateRegistrationForm(data models.User) map[string][]string {
 
 	// 1. 定制认证规则
 	rules := govalidator.MapData{
-		"name":             []string{"required", "alpha_num", "between:3,20"},
-		"email":            []string{"required", "min:4", "max:30", "email"},
+		"name":             []string{"required", "alpha_num", "between:3,20", "not_exists:users,name"},
+		"email":            []string{"required", "min:4", "max:30", "email", "not_exists:users,email"},
 		"password":         []string{"required", "min:6"},
 		"password_confirm": []string{"required"},
 	}
