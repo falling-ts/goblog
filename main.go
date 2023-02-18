@@ -2,6 +2,7 @@ package main
 
 import (
 	apply "goblog/app"
+	"goblog/app/http/middlewares"
 	_ "goblog/bootstrap"
 	"net/http"
 )
@@ -12,5 +13,5 @@ var (
 )
 
 func main() {
-	err.Throw(http.ListenAndServe(":3000", app.Router))
+	err.Throw(http.ListenAndServe(":3000", middlewares.RemoveSlash(app.Router)))
 }
