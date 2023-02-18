@@ -1,22 +1,25 @@
-package application
+package apply
 
 import (
-	"database/sql"
 	"github.com/gorilla/mux"
+	"goblog/app/error"
 	"goblog/pkg/db"
+	"gorm.io/gorm"
 )
 
-type Application struct {
+type Apply struct {
 	Router *mux.Router
-	DB     *sql.DB
+	DB     *gorm.DB
+	Err    *error.Error
 }
 
-var App *Application
+var App *Apply
 
 // init 初始化
 func init() {
-	App = &Application{
+	App = &Apply{
 		Router: mux.NewRouter(),
-		DB:     db.InitDB(),
+		DB:     db.InitGormDB(),
+		Err:    error.NewError(),
 	}
 }

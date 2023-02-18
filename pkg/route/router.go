@@ -2,12 +2,12 @@ package route
 
 import (
 	"github.com/gorilla/mux"
-	application "goblog/app"
+	apply "goblog/app"
 	"net/http"
 )
 
 var (
-	app    = application.App
+	app    = apply.App
 	router = app.Router
 )
 

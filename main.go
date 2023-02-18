@@ -1,16 +1,16 @@
 package main
 
 import (
-	application "goblog/app"
+	apply "goblog/app"
 	_ "goblog/bootstrap"
 	"net/http"
 )
 
-var app = application.App
+var (
+	app = apply.App
+	err = app.Err
+)
 
 func main() {
-	err := http.ListenAndServe(":3000", app.Router)
-	if err != nil {
-		return
-	}
+	err.Throw(http.ListenAndServe(":3000", app.Router))
 }
