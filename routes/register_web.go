@@ -32,4 +32,5 @@ func RegisterWeb(router *mux.Router) {
 	router.HandleFunc("/auth/do-register", auth.DoRegister).Methods("POST").Name("auth.doregister")
 	router.HandleFunc("/auth/login", auth.Login).Methods("GET").Name("auth.login")
 	router.HandleFunc("/auth/dologin", auth.DoLogin).Methods("POST").Name("auth.dologin")
+	router.HandleFunc("/auth/logout", auth.Logout).Methods("POST").Name("auth.logout")
 }
