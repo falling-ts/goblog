@@ -6,7 +6,6 @@ import (
 	"goblog/pkg/logger"
 	gormMysql "gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	gormLogger "gorm.io/gorm/logger"
 	"time"
 )
 
@@ -58,7 +57,7 @@ func InitGormDB() *gorm.DB {
 
 	// 准备数据库连接池
 	gormDB, err = gorm.Open(config, &gorm.Config{
-		Logger: gormLogger.Default.LogMode(gormLogger.Info),
+		// Logger: gormLogger.Default.LogMode(gormLogger.Info),
 	})
 
 	logger.LogError(err)

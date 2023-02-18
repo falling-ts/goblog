@@ -2,7 +2,9 @@ package models
 
 import (
 	"goblog/pkg/logger"
+	"goblog/pkg/password"
 	"goblog/pkg/types"
+	"gorm.io/gorm"
 )
 
 // User 用户模型
@@ -23,7 +25,7 @@ func NewUser() *User {
 
 // Create 创建用户，通过 User.ID 来判断是否创建成功
 func (user *User) Create() (err error) {
-	if err = db.Create(&user).Error; err != nil {
+	if err = db.Create(user).Error; err != nil {
 		logger.LogError(err)
 		return err
 	}
@@ -48,6 +50,14 @@ func (user *User) GetByEmail(email string) error {
 }
 
 // ComparePassword 对比密码是否匹配
-func (user *User) ComparePassword(password string) bool {
-	return user.Password == password
+func (user *User) ComparePassword(_password string) bool {
+	return password.CheckHash(_password, user.Password)
+}
+
+// BeforeSave GORM 的模型钩子，在保存和更新模型前调用
+func (user *User) BeforeSave(tx *gorm.DB) (err error) {
+	if !password.IsHashed(user.Password) {
+		user.Password = password.Hash(user.Password)
+	}
+	return
 }
