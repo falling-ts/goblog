@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-// PagesController 处理静态页面
+// Pages PagesController 处理静态页面
 type Pages struct {
 }
 

@@ -1,22 +1,15 @@
-package database
+package db
 
 import (
 	"database/sql"
+	"github.com/go-sql-driver/mysql"
 	"goblog/pkg/logger"
 	"time"
-
-	"github.com/go-sql-driver/mysql"
 )
 
-// DB 数据库对象
-var DB *sql.DB
+var db *sql.DB
 
-// Initialize 初始化数据库
-func Initialize() {
-	initDB()
-}
-
-func initDB() {
+func InitDB() *sql.DB {
 
 	var err error
 
@@ -31,17 +24,19 @@ func initDB() {
 	}
 
 	// 准备数据库连接池
-	DB, err = sql.Open("mysql", config.FormatDSN())
+	db, err = sql.Open("mysql", config.FormatDSN())
 	logger.LogError(err)
 
 	// 设置最大连接数
-	DB.SetMaxOpenConns(100)
+	db.SetMaxOpenConns(100)
 	// 设置最大空闲连接数
-	DB.SetMaxIdleConns(25)
+	db.SetMaxIdleConns(25)
 	// 设置每个链接的过期时间
-	DB.SetConnMaxLifetime(5 * time.Minute)
+	db.SetConnMaxLifetime(5 * time.Minute)
 
 	// 尝试连接，失败会报错
-	err = DB.Ping()
+	err = db.Ping()
 	logger.LogError(err)
+
+	return db
 }
