@@ -2,7 +2,10 @@ package models
 
 import (
 	"goblog/pkg/logger"
+	"goblog/pkg/pagination"
+	"goblog/pkg/route"
 	"goblog/pkg/types"
+	"net/http"
 	"strconv"
 )
 
@@ -15,12 +18,19 @@ type Article struct {
 }
 
 // GetAll 获取全部文章
-func (*Article) GetAll() ([]Article, error) {
+func (*Article) GetAll(r *http.Request, perPage int) ([]Article, pagination.ViewData, error) {
+	// 1. 初始化分页实例
+	db := db.Model(Article{}).Order("created_at desc")
+	_pager := pagination.New(r, db, route.Name2URL("articles.index"), perPage)
+
+	// 2. 获取视图数据
+	viewData := _pager.Paging()
+
+	// 3. 获取数据
 	var articles []Article
-	if err := db.Preload("User").Find(&articles).Error; err != nil {
-		return articles, err
-	}
-	return articles, nil
+	_pager.Results(&articles)
+
+	return articles, viewData, nil
 }
 
 // Get 通过 ID 获取文章

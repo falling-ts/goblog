@@ -63,3 +63,12 @@ func (user *User) BeforeSave(tx *gorm.DB) (err error) {
 func (user *User) Link() string {
 	return route.Name2URL("users.show", "id", user.GetStringID())
 }
+
+// All 获取所有用户数据
+func (*User) All() ([]User, error) {
+	var users []User
+	if err := db.Find(&users).Error; err != nil {
+		return users, err
+	}
+	return users, nil
+}

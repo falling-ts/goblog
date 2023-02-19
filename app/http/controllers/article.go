@@ -28,14 +28,16 @@ type ArticleFormData struct {
 // Index 获取文件列表
 func (art *Article) Index(w http.ResponseWriter, r *http.Request) {
 	// 1. 获取结果集
-	articles, _err := article.GetAll()
+	articles, pagerData, err := article.GetAll(r, 2)
 
-	if _err != nil {
+	if err != nil {
 		art.ResponseForSQLError(w, err)
 	} else {
 		// 2. 加载模板
+		// ---  2. 加载模板 ---
 		view.Render(w, view.D{
-			"Articles": articles,
+			"Articles":  articles,
+			"PagerData": pagerData,
 		}, "articles.index", "articles._article_meta")
 	}
 }
