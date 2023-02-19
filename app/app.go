@@ -5,14 +5,17 @@ import (
 	"github.com/gorilla/mux"
 	"goblog/app/error"
 	"goblog/pkg/db"
+	"goblog/public"
+	"goblog/resources"
 	"gorm.io/gorm"
 )
 
 type Apply struct {
-	Router *mux.Router
-	DB     *gorm.DB
-	Err    *error.Error
-	TplFS  embed.FS
+	Router   *mux.Router
+	DB       *gorm.DB
+	Err      *error.Error
+	TplFS    embed.FS
+	StaticFS embed.FS
 }
 
 var App *Apply
@@ -20,13 +23,10 @@ var App *Apply
 // init 初始化
 func init() {
 	App = &Apply{
-		Router: mux.NewRouter(),
-		DB:     db.InitGormDB(),
-		Err:    error.NewError(),
+		Router:   mux.NewRouter(),
+		DB:       db.InitGormDB(),
+		Err:      error.NewError(),
+		TplFS:    resources.TplFS,
+		StaticFS: public.StaticFS,
 	}
-}
-
-// SetTplFS 设置数据
-func (app *Apply) SetTplFS(tplFS embed.FS) {
-	app.TplFS = tplFS
 }

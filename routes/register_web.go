@@ -2,9 +2,16 @@ package routes
 
 import (
 	"github.com/gorilla/mux"
+	apply "goblog/app"
 	"goblog/app/http/controllers"
 	"goblog/app/http/middlewares"
+	"io/fs"
 	"net/http"
+)
+
+var (
+	app      = apply.App
+	staticFS = app.StaticFS
 )
 
 // RegisterWeb RegWeb 注册网页相关路由
@@ -23,10 +30,6 @@ func RegisterWeb(router *mux.Router) {
 	router.HandleFunc("/articles/{id:[0-9]+}", middlewares.Auth(article.Update)).Methods("POST").Name("articles.update")
 	router.HandleFunc("/articles/{id:[0-9]+}/delete", middlewares.Auth(article.Delete)).Methods("POST").Name("articles.delete")
 
-	// 静态资源
-	router.PathPrefix("/css/").Handler(http.FileServer(http.Dir("./public")))
-	router.PathPrefix("/js/").Handler(http.FileServer(http.Dir("./public")))
-
 	// 用户认证
 	auth := new(controllers.Auth)
 	router.HandleFunc("/auth/register", middlewares.Guest(auth.Register)).Methods("GET").Name("auth.register")
@@ -44,4 +47,8 @@ func RegisterWeb(router *mux.Router) {
 	router.HandleFunc("/categories", middlewares.Auth(cate.Store)).Methods("POST").Name("categories.store")
 	router.HandleFunc("/categories", middlewares.Auth(cate.Store)).Methods("POST").Name("categories.store")
 	router.HandleFunc("/categories/{id:[0-9]+}", cate.Show).Methods("GET").Name("categories.show")
+
+	// 静态资源
+	sub, _ := fs.Sub(staticFS, "static")
+	router.PathPrefix("/").Handler(http.FileServer(http.FS(sub)))
 }

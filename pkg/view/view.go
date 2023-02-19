@@ -1,7 +1,6 @@
 package view
 
 import (
-	"embed"
 	apply "goblog/app"
 	"goblog/app/models"
 	"goblog/pkg/auth"
@@ -19,12 +18,8 @@ type D map[string]interface{}
 
 var (
 	app   = apply.App
-	tplFS embed.FS
-)
-
-func InitTplFS() {
 	tplFS = app.TplFS
-}
+)
 
 // Render 渲染通用视图
 func Render(w io.Writer, data D, tplFiles ...string) {
@@ -63,7 +58,7 @@ func RenderTemplate(w io.Writer, name string, data D, tplFiles ...string) {
 
 func getTemplateFiles(tplFiles ...string) []string {
 	// 1 设置模板相对路径
-	viewDir := "resources/views/"
+	viewDir := "views/"
 
 	// 2. 遍历传参文件列表 Slice，设置正确的路径，支持 dir.filename 语法糖
 	for i, f := range tplFiles {
