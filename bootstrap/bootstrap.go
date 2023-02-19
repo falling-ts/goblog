@@ -21,5 +21,6 @@ func initRouter() {
 	routes.RegisterWeb(router)
 
 	// 中间件
+	router.Use(middlewares.Initial)
 	router.Use(middlewares.StartSession)
 }

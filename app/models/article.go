@@ -11,10 +11,11 @@ import (
 
 type Article struct {
 	BaseModel
-	Title  string `gorm:"type:varchar(255);not null;" valid:"title"`
-	Body   string `gorm:"type:longtext;not null;" valid:"body"`
-	UserID uint64 `gorm:"not null;index"`
-	User   User
+	Title      string `gorm:"type:varchar(255);not null;" valid:"title"`
+	Body       string `gorm:"type:longtext;not null;" valid:"body"`
+	UserID     uint64 `gorm:"not null;index"`
+	User       User
+	CategoryID uint64 `gorm:"not null;default:4;index"`
 }
 
 // GetAll 获取全部文章
@@ -97,4 +98,21 @@ func (*Article) GetByUserID(uid string) ([]Article, error) {
 		return articles, err
 	}
 	return articles, nil
+}
+
+// GetByCategoryID 获取分类相关的文章
+func (*Article) GetByCategoryID(cid string, r *http.Request, perPage int) ([]Article, pagination.ViewData, error) {
+
+	// 1. 初始化分页实例
+	db := db.Model(Article{}).Where("category_id = ?", cid).Order("created_at desc")
+	_pager := pagination.New(r, db, route.Name2URL("categories.show", "id", cid), perPage)
+
+	// 2. 获取视图数据
+	viewData := _pager.Paging()
+
+	// 3. 获取数据
+	var articles []Article
+	_pager.Results(&articles)
+
+	return articles, viewData, nil
 }

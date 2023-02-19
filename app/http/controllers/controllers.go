@@ -13,12 +13,18 @@ import (
 var (
 	app      = apply.App
 	err      = app.Err
-	article  = new(models.Article)
-	user     = new(models.User)
-	category = new(models.Category)
+	article  *models.Article
+	user     *models.User
+	category *models.Category
 )
 
 type Controllers struct{}
+
+func Initial() {
+	article = new(models.Article)
+	user = new(models.User)
+	category = new(models.Category)
+}
 
 // ResponseForSQLError 处理 SQL 错误并返回
 func (*Controllers) ResponseForSQLError(w http.ResponseWriter, err error) {
