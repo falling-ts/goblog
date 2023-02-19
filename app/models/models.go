@@ -24,6 +24,7 @@ func migration(db *gorm.DB) {
 	db.AutoMigrate(
 		&User{},
 		&Article{},
+		&Category{},
 	)
 }
 

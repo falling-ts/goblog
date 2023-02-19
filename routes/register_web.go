@@ -38,4 +38,8 @@ func RegisterWeb(router *mux.Router) {
 	// 用户相关
 	user := new(controllers.User)
 	router.HandleFunc("/users/{id:[0-9]+}", user.Show).Methods("GET").Name("users.show")
+
+	cate := new(controllers.Category)
+	router.HandleFunc("/categories/create", middlewares.Auth(cate.Create)).Methods("GET").Name("categories.create")
+	router.HandleFunc("/categories", middlewares.Auth(cate.Store)).Methods("POST").Name("categories.store")
 }

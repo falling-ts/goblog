@@ -11,10 +11,11 @@ import (
 )
 
 var (
-	app     = apply.App
-	err     = app.Err
-	article = new(models.Article)
-	user    = new(models.User)
+	app      = apply.App
+	err      = app.Err
+	article  = new(models.Article)
+	user     = new(models.User)
+	category = new(models.Category)
 )
 
 type Controllers struct{}
