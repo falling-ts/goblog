@@ -33,6 +33,7 @@ func RenderTemplate(w io.Writer, name string, data D, tplFiles ...string) {
 	data["loginUser"] = auth.User
 	data["flash"] = flash.All()
 	data["Users"], _ = new(models.User).All()
+	data["Categories"], _ = new(models.Category).All()
 
 	// 2. 生成模板文件
 	allFiles := getTemplateFiles(tplFiles...)

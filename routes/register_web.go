@@ -42,4 +42,6 @@ func RegisterWeb(router *mux.Router) {
 	cate := new(controllers.Category)
 	router.HandleFunc("/categories/create", middlewares.Auth(cate.Create)).Methods("GET").Name("categories.create")
 	router.HandleFunc("/categories", middlewares.Auth(cate.Store)).Methods("POST").Name("categories.store")
+	router.HandleFunc("/categories", middlewares.Auth(cate.Store)).Methods("POST").Name("categories.store")
+	router.HandleFunc("/categories/{id:[0-9]+}", cate.Show).Methods("GET").Name("categories.show")
 }

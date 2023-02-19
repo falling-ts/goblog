@@ -1,6 +1,9 @@
 package models
 
-import "goblog/pkg/logger"
+import (
+	"goblog/pkg/logger"
+	"goblog/pkg/route"
+)
 
 // Category 文章分类
 type Category struct {
@@ -17,4 +20,18 @@ func (category *Category) Create() (err error) {
 	}
 
 	return nil
+}
+
+// All 获取分类数据
+func (*Category) All() ([]Category, error) {
+	var categories []Category
+	if err := db.Find(&categories).Error; err != nil {
+		return categories, err
+	}
+	return categories, nil
+}
+
+// Link 方法用来生成文章链接
+func (category *Category) Link() string {
+	return route.Name2URL("categories.show", "id", category.GetStringID())
 }
