@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var user = new(models.User)
+var user *models.User
 
 func _getUID() string {
 	_uid := session.Get("uid")
@@ -34,6 +34,7 @@ func User() *models.User {
 // Attempt 尝试登录
 func Attempt(email string, password string) error {
 	// 1. 根据 Email 获取用户
+	user = new(models.User)
 	err := user.GetByEmail(email)
 
 	// 2. 如果出现错误

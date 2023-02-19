@@ -6,6 +6,7 @@ import (
 	"goblog/app/models"
 	"goblog/app/policies"
 	"goblog/app/requests"
+	"goblog/pkg/auth"
 	"goblog/pkg/flash"
 	"goblog/pkg/route"
 	"goblog/pkg/view"
@@ -67,9 +68,11 @@ func (*Article) Create(w http.ResponseWriter, r *http.Request) {
 
 // Store 保存文章
 func (*Article) Store(w http.ResponseWriter, r *http.Request) {
+	currentUser := auth.User()
 	article := &models.Article{
-		Title: r.PostFormValue("title"),
-		Body:  r.PostFormValue("body"),
+		Title:  r.PostFormValue("title"),
+		Body:   r.PostFormValue("body"),
+		UserID: currentUser.ID,
 	}
 
 	errors := requests.ValidateArticleForm(*article)
