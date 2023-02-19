@@ -3,6 +3,7 @@ package models
 import (
 	"goblog/pkg/logger"
 	"goblog/pkg/password"
+	"goblog/pkg/route"
 	"goblog/pkg/types"
 	"gorm.io/gorm"
 )
@@ -17,10 +18,6 @@ type User struct {
 
 	// gorm:"-" —— 设置 GORM 在读写时略过此字段，仅用于表单验证
 	PasswordConfirm string `gorm:"-" valid:"password_confirm"`
-}
-
-func NewUser() *User {
-	return &User{}
 }
 
 // Create 创建用户，通过 User.ID 来判断是否创建成功
@@ -60,4 +57,9 @@ func (user *User) BeforeSave(tx *gorm.DB) (err error) {
 		user.Password = password.Hash(user.Password)
 	}
 	return
+}
+
+// Link 方法用来生成用户链接
+func (user *User) Link() string {
+	return route.Name2URL("users.show", "id", user.GetStringID())
 }

@@ -8,18 +8,16 @@ import (
 
 type Article struct {
 	BaseModel
-	Title string `gorm:"type:varchar(255);not null;" valid:"title"`
-	Body  string `gorm:"type:longtext;not null;" valid:"body"`
-}
-
-func NewArticle() *Article {
-	return &Article{}
+	Title  string `gorm:"type:varchar(255);not null;" valid:"title"`
+	Body   string `gorm:"type:longtext;not null;" valid:"body"`
+	UserID uint64 `gorm:"not null;index"`
+	User   User
 }
 
 // GetAll 获取全部文章
 func (*Article) GetAll() ([]Article, error) {
 	var articles []Article
-	if err := db.Find(&articles).Error; err != nil {
+	if err := db.Preload("User").Find(&articles).Error; err != nil {
 		return articles, err
 	}
 	return articles, nil
@@ -28,7 +26,7 @@ func (*Article) GetAll() ([]Article, error) {
 // Get 通过 ID 获取文章
 func (article *Article) Get(idStr string) error {
 	id := types.StringToUint64(idStr)
-	if err := db.First(article, id).Error; err != nil {
+	if err := db.Preload("User").First(article, id).Error; err != nil {
 		return err
 	}
 
@@ -75,4 +73,18 @@ func (article *Article) Delete() (rowsAffected int64, err error) {
 	}
 
 	return result.RowsAffected, nil
+}
+
+// CreatedAtDate 创建日期
+func (article *Article) CreatedAtDate() string {
+	return article.CreatedAt.Format("2006-01-02")
+}
+
+// GetByUserID 获取全部文章
+func (*Article) GetByUserID(uid string) ([]Article, error) {
+	var articles []Article
+	if err := db.Where("user_id = ?", uid).Preload("User").Find(&articles).Error; err != nil {
+		return articles, err
+	}
+	return articles, nil
 }

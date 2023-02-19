@@ -34,4 +34,8 @@ func RegisterWeb(router *mux.Router) {
 	router.HandleFunc("/auth/login", middlewares.Guest(auth.Login)).Methods("GET").Name("auth.login")
 	router.HandleFunc("/auth/dologin", middlewares.Guest(auth.DoLogin)).Methods("POST").Name("auth.dologin")
 	router.HandleFunc("/auth/logout", middlewares.Auth(auth.Logout)).Methods("POST").Name("auth.logout")
+
+	// 用户相关
+	user := new(controllers.User)
+	router.HandleFunc("/users/{id:[0-9]+}", user.Show).Methods("GET").Name("users.show")
 }

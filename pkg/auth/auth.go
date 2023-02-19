@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var user = models.NewUser()
+var user = new(models.User)
 
 func _getUID() string {
 	_uid := session.Get("uid")

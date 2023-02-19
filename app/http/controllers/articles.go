@@ -23,8 +23,6 @@ type ArticleFormData struct {
 	Errors      map[string]string
 }
 
-var article = models.NewArticle()
-
 // Index 获取文件列表
 func (*Article) Index(w http.ResponseWriter, r *http.Request) {
 	// 1. 获取结果集
@@ -39,7 +37,7 @@ func (*Article) Index(w http.ResponseWriter, r *http.Request) {
 		// 2. 加载模板
 		view.Render(w, view.D{
 			"Articles": articles,
-		}, "articles.index")
+		}, "articles.index", "articles._article_meta")
 	}
 }
 
@@ -74,7 +72,7 @@ func (*Article) Show(w http.ResponseWriter, r *http.Request) {
 		// 4. 读取成功，显示文章
 		view.Render(w, view.D{
 			"Article": article,
-		}, "articles.show")
+		}, "articles.show", "articles._article_meta")
 	}
 }
 
